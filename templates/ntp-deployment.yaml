@@ -1,39 +1,53 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -c
-    kompose.version: 1.21.0 (992df58d8)
-  creationTimestamp: null
+  name: {{ template "chrony.fullname" . }}
   labels:
-    io.kompose.service: ntp
-  name: ntp
+    app: {{ template "chrony.name" . }}
+    chart: {{ template "chrony.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
-      io.kompose.service: ntp
-  strategy: {}
+      app: {{ template "chrony.name" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert -c
-        kompose.version: 1.21.0 (992df58d8)
-      creationTimestamp: null
       labels:
-        io.kompose.service: ntp
+        app: {{ template "chrony.name" . }}
+        release: {{ .Release.Name }}
     spec:
       containers:
-      - env:
+      - name: {{ .Chart.Name }}
+        env:
         - name: NTP_SERVERS
-          value: time.cloudflare.com
-        image: cturra/ntp:latest
-        imagePullPolicy: ""
-        name: ntp
+          value: {{ .Values.ntpServers }}
+        {{- range $key, $value := .Values.extraEnvVars }}
+        - name: {{ $key | quote }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- range $key, $value := .Values.extraEnvVarsSecret }}
+        - name: {{ $key | quote }}
+          valueFrom:
+            secretKeyRef:
+              key: {{ $value.key | quote }}
+              name: {{ $value.name | quote }}
+        {{- end }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 123
+          name: ntp
           protocol: UDP
-        resources: {}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
         securityContext:
           capabilities:
             add:
@@ -43,4 +57,3 @@ spec:
       restartPolicy: Always
       serviceAccountName: ""
       volumes: null
-status: {}
