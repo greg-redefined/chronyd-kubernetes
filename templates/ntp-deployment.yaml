@@ -54,6 +54,24 @@ spec:
             - SYS_NICE
             - SYS_RESOURCE
             - SYS_TIME
+        {{- if .Values.probes.liveness.enabled }}
+        livenessProbe:
+          exec:
+            command:
+            - /usr/bin/chronyc sources
+          initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+          failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+          timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.probes.readiness.enabled }}
+        readinessProbe:
+          exec:
+            command:
+            - /usr/bin/chronyc sources
+          initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+          failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
+          timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
+        {{- end }}
       restartPolicy: Always
       serviceAccountName: ""
       volumes: null
