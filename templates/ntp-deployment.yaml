@@ -80,6 +80,6 @@ spec:
       serviceAccountName: ""
       volumes: 
       - configMap:
-          defaultMode: 420
+          defaultMode: 511
           name: {{ template "chrony.fullname" . }}-probe
         name: probe
