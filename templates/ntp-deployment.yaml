@@ -40,7 +40,7 @@ spec:
               key: {{ $value.key | quote }}
               name: {{ $value.name | quote }}
         {{- end }}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 123
