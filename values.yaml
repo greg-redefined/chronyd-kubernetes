@@ -1,0 +1,27 @@
+# Default values for chronyd
+# This is a YAML-formatted file
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: "cturra/ntp"
+  tag: latest
+  pullPolicy: IfNotPresent
+
+serviceUDP:
+  type: NodePort
+  externalTrafficPolicy: Local
+  loadBalancerIP: ""
+    # a fixed LoadBalancer IP
+  annotations: {}
+    # metallb.universe.tf/address-pool: network-services
+    # metallb.universe.tf/allow-shared-ip: chrony
+
+virtualHost: ntp.yourdomain
+
+ntpEntries:
+- "pool 0.pool.ntp.org iburst maxsources 1"
+- "pool 1.pool.ntp.org iburst maxsources 1"
+- "pool 2.pool.ntp.org iburst maxsources 1"
+- "server navobs1.gatech.edu iburst"
