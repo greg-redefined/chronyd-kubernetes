@@ -1,4 +1,4 @@
-All credit goes to cturra for creating the base Docker container. This is just my small attempt to convert this into a Helm chart for Kubernetes.
+All credit goes to [cturra](https://github.com/cturra) for creating the base Docker container. This is just my small attempt to convert this into a Helm chart for Kubernetes.
 
 ## About this container
 
