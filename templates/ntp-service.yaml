@@ -1,20 +1,29 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -c
-    kompose.version: 1.21.0 (992df58d8)
-  creationTimestamp: null
+  name: {{ template "chrony.fullname" . }}-udp
   labels:
-    io.kompose.service: ntp
-  name: ntp
+    app: {{ template "chrony.name" . }}
+    chart: {{ template "chrony.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.serviceUDP.annotations }}
+  annotations:
+{{ toYaml .Values.serviceUDP.annotations | indent 4 }}
+{{- end }}
 spec:
+  type: {{ .Values.serviceUDP.type }}
+  {{- if .Values.serviceUDP.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.serviceUDP.loadBalancerIP }}
+  {{- end }}
+  {{- if or (eq .Values.serviceUDP.type "NodePort") (eq .Values.serviceUDP.type "LoadBalancer") }}
+  externalTrafficPolicy: Local
+  {{- end }}
   ports:
-  - name: "123"
-    port: 123
+  - port: 123
+    targetPort: ntp
     protocol: UDP
-    targetPort: 123
+    name: ntp
   selector:
-    io.kompose.service: ntp
-status:
-  loadBalancer: {}
+    app: {{ template "chrony.name" . }}
+    release: {{ .Release.Name }}
