@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ntp
+  name: ntp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ntp
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: ntp
+    spec:
+      containers:
+      - env:
+        - name: NTP_SERVERS
+          value: time.cloudflare.com
+        image: cturra/ntp:latest
+        imagePullPolicy: ""
+        name: ntp
+        ports:
+        - containerPort: 123
+          protocol: UDP
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - SYS_NICE
+            - SYS_RESOURCE
+            - SYS_TIME
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}
